@@ -1,0 +1,110 @@
+---
+title: "Análisis Inversión Obras Públicas CHile"
+output: html_document
+---
+
+```{r Opciones de Chunk, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r Cargar librerías}
+library(dplyr)
+library(ggplot2)
+library(ggridges)
+library(stringr)
+library(forcats)
+library(readxl)
+library(httr)
+```
+
+```{r Cargar datos}
+url <- "http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx"
+GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
+datos <- read_excel(tf)
+
+str(datos)
+head(datos)
+```
+
+```{r Preparar datos}
+df <- datos %>%
+  select(-BIP) %>%
+  rename(
+    Anio = AÑO,
+    Region = REGIÓN,
+    Servicio = SERVICIO,
+    Provincia = PROVINCIA,
+    Comuna = COMUNA,
+    Nombre = NOMBRE,
+    Inversion = `INVERSIÓN (MILES DE $ DE CADA AÑO)`
+  ) %>% 
+  mutate(Inversion = round(Inversion / 1000000, 1),
+         Provincia = str_to_sentence(Provincia),
+         Nombre = str_to_lower(Nombre),
+         Comuna = str_to_sentence(Comuna),
+         Region = as_factor(Region))
+```
+
+```{r Inversión por año}
+df %>% 
+  group_by(Anio) %>% 
+  summarise(Inversion = sum(Inversion)) %>% 
+  ggplot(aes(x = Anio, y = Inversion, label = Inversion)) +
+  scale_x_continuous(breaks = c(2011:2017)) +
+  geom_line(size = 1.2, col = "blue") +
+  geom_label() +
+  ylim(0, 1600) +
+  labs(title = "Inversión en OOPP en el periodo 2011-2017 (MM CLP)", 
+       subtitle = "Desglose por año",
+       x = "",
+       y= "") +
+  theme_minimal()
+```
+
+```{r Inversión por Región}
+df %>% 
+  group_by(Region) %>% 
+  summarise(Inversion = sum(Inversion)) %>% 
+  ggplot(aes(x = reorder(Region, Inversion), y = Inversion, label = Inversion)) +
+  geom_col(fill = "red") +
+  coord_flip() +
+  ylim(0, 1150) + 
+  geom_text(hjust = -0.1, size = 3) +
+  labs(title = "Inversión en OOPP en el periodo 2011-2017 (MM CLP)", 
+       subtitle = "Desglose por región",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())
+```
+
+```{r Inversión por Año y Región}
+df %>% 
+  group_by(Region, Anio) %>% 
+  summarise(Inversion = sum(Inversion)) %>% 
+  ggplot(aes(x = Anio, y = Inversion, label = Inversion)) + 
+  facet_wrap(~ Region, nrow = 4) +
+  geom_line(col = "blue") +
+  geom_point() +
+  ylim(0, 300) + 
+  geom_text(size = 2, vjust = -0.4) +
+  labs(title = "Inversión en OOPP en el periodo 2011-2017 (MM CLP)", 
+       subtitle = "Desglose por región y año",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank())
+```
+
+
+```{r}
+df %>% 
+  mutate(
+    Anio = as_factor(Anio),
+    Servicio = as_factor(Servicio)
+  ) %>% 
+lm(Inversion ~ Anio + Region + Servicio, data = .) %>% 
+  summary()
+```
+
