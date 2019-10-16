@@ -105,11 +105,11 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 
 ```
 ## Response [http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx]
-##   Date: 2019-10-16 14:23
+##   Date: 2019-10-16 14:26
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 675 kB
-## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpkvGWow\file13c01fdd49b7.xlsx
+## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpcjNIZg\file17ac334a1f0c.xlsx
 ```
 
 ```r
