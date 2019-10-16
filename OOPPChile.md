@@ -36,7 +36,7 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 datos <- read_excel(tf)
 ```
 
-Utilizando `head()` y \``str()` podemos tener una primera impresión sobre los datos que acabamos de cargar.
+Utilizando `head()` y `str()` podemos tener una primera impresión sobre los datos que acabamos de cargar.
 
 ``` r
 head(datos)
@@ -71,7 +71,8 @@ Teniendo en cuenta las características de los datos haremos unas pequeñas modi
 -   Sacar la columna `BIP` que pareciera ser un identificador que no otorga mayor información
 -   Cambiar los nombres de las variables para dejarlas en formato **sentence** (primer letra mayúscula y el resto minúscula) así como sacar caractéres especiales
 -   Cambiar la variable `Inversion` de miles a millones de pesos
--   Modificar los valores de las columnas `Region`, `Provincia`, `Comuna` y `Nombre` a formato **sentence**
+-   Modificar los valores de las columnas `Region`, `Provincia` y `Comuna` a formato **sentence**
+-   Modificar los valores de la columna `Nombre` a minúscula
 -   Modificar la columna `Region` de **character** a **factor**
 
 Todos estos cambios serán almacenados en un objeto llamado `df`.
@@ -92,9 +93,11 @@ df <- datos %>%
          Region = str_to_sentence(Region),
          Provincia = str_to_sentence(Provincia),
          Comuna = str_to_sentence(Comuna),
-         Nombre = str_to_sentence(Nombre),
+         Nombre = str_to_lower(Nombre),
          Region = as_factor(Region))
 ```
+
+Teniendo listos nuestros datos, procedemos a hacer un primer análisis del gasto en Obras Públicas a través de los años.
 
 ``` r
 df %>% 
@@ -114,6 +117,10 @@ df %>%
 
 ![](OOPPChile_files/figure-markdown_github/Inversión%20por%20año-1.png)
 
+Es posible observar que la inversión presenta una leve alza sostenida durante el periodo estudiado con un **peak** el año 2015 de casi 1.600 millones de pesos.
+
+Sumado a lo anterior, podemos ver como se comporta la inversión de obras públicas en términos de las regiones del país.
+
 ``` r
 df %>% 
   group_by(Region) %>% 
@@ -132,6 +139,8 @@ df %>%
 ```
 
 ![](OOPPChile_files/figure-markdown_github/Inversión%20por%20Región-1.png)
+
+Como podría de esperarse, la gran parte de la inversión de concentra en la región metropolitana (donde se encuentra la capital) seguida por la región de BioBío donde se encuentra la ciudad de Concepción (segunda ciudad más grande de Chile).
 
 ``` r
 df %>% 
@@ -154,8 +163,41 @@ df %>%
 
 ![](OOPPChile_files/figure-markdown_github/Inversión%20por%20Año%20y%20Región-1.png)
 
+Al considerar ambas dimensiones (tiempo y regiones) vemos que -en general- la inversión se mantiene constante durante los años en la mayor parte de las regiones. Destacan el caso de la región metropolitana donde más bien pareciera haber una disminución del gasto en el tiempo.
+
+Teniendo una concepción general de como se comportó la inversión en Obras Públicas durante el periódo 2011-2017 procederemos a hacer un análisis de que tipo de proyectos son los que se han realizado. Para esto nos concentraremos en la columna `Nombre` que nos permitiría extraer un poco más de información sobre el tipo de inversión que se ha realizado.
+
+Para realizar este análisis lo primero que haremos es **tokenizar** la información disponible en `Nombre`, esto corresponde a separar las frases o conjuntos de palabra de cada proyecto de inversión dejando una observación (fila) para cada una de las palabras de cada valor en `Nombre` (por ej. una fila con valor de `Nombre` **Ampliación de calle** pasa a ser tres filas correspondientes a **Ampliación**, **de**, y **calle**).
+
 ``` r
-df %>% 
+df_palabra <- df %>% 
+  unnest_tokens(palabra, Nombre)
+
+df_palabra %>% 
+  count(palabra, sort = TRUE) %>% 
+  top_n(10)
+```
+
+    ## # A tibble: 10 x 2
+    ##    palabra          n
+    ##    <chr>        <int>
+    ##  1 de            4992
+    ##  2 ruta          2726
+    ##  3 conservacion  2194
+    ##  4 mejoramiento  2184
+    ##  5 y             1617
+    ##  6 construccion  1543
+    ##  7 region        1472
+    ##  8 sector        1439
+    ##  9 vial          1122
+    ## 10 la             984
+
+Al ver las 10 palabras más comunes nos encontramos con algunas que son informativas tales como **conservación** y **mejoramiento** mientas que otras no tanto **de** e **y**.
+
+Entonces, lo que haremos es hacer un poco de limpieza de la nueva columna `palabra` consistente en: - Eliminar puntuaciones de las palabras - Eliminar palabras que contengan número - Eliminar **stopwords** (ej. a, de, y, etc utilizando la librería `stopwords`) - Reemplazar letras con tíldes - Sacar otras palabras identificadas al analizar resultados - Eliminar toda palabra que tenga 2 o menos letras
+
+``` r
+df_palabra <- df %>% 
   unnest_tokens(palabra, Nombre) %>% 
   mutate(palabra = str_replace(palabra, "[:punct:]", " "),
          palabra = str_replace(palabra, "\\w*[0-9]+\\w*\\s*", " "),
@@ -164,12 +206,42 @@ df %>%
   filter(!is.na(palabra) & 
          !palabra %in% c("y", "yy", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiv", "", " ", "apr", "ano", "anos", "san"),
          !palabra %in% stopwords(language = "es"),
-         nchar > 2) %>% 
-  count(Servicio, palabra, sort = TRUE) %>% 
-  group_by(Servicio) %>% 
-  mutate(palabra = reorder(palabra, n)) %>% 
-  ggplot(aes(palabra, n, fill = Servicio)) +
-  geom_col(show.legend = FALSE)
+         nchar > 2)
+
+df_palabra %>% 
+  count(palabra, sort = TRUE) %>% 
+  top_n(10)
 ```
 
-![](OOPPChile_files/figure-markdown_github/unnamed-chunk-2-1.png)
+    ## # A tibble: 10 x 2
+    ##    palabra          n
+    ##    <chr>        <int>
+    ##  1 ruta          2726
+    ##  2 conservacion  2563
+    ##  3 region        2409
+    ##  4 mejoramiento  2184
+    ##  5 construccion  1880
+    ##  6 sector        1439
+    ##  7 vial          1122
+    ##  8 reposicion    1091
+    ##  9 red            937
+    ## 10 sistema        726
+
+``` r
+df_palabra %>% 
+  count(Region, palabra) %>% 
+  filter(n > 5) %>% 
+  group_by(Region) %>% 
+  top_n(10, n) %>% 
+  ungroup() %>% 
+  arrange(Region, -n) %>% 
+  mutate(orden = row_number()) %>% 
+  ggplot(aes(x = reorder(palabra, -orden), y = n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~Region, scales = "free_y")
+```
+
+![](OOPPChile_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+***(EN DESARROLLO)***
