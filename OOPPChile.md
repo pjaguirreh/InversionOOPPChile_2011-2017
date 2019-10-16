@@ -1,17 +1,24 @@
 Análisis Inversión Obras Públicas CHile
 ================
 
+En este documento realizaremos un análisis de las inversiones realizadas por el *Ministerio de Obras Públicas de Chile* en el periodo 2011-2017.
+
+Primero cargamos las librerías que se utilizarán en este ejercicio.
+
 ``` r
-library(dplyr)
-library(ggplot2)
-library(ggridges)
-library(stringr)
-library(forcats)
-library(readxl)
-library(httr)
-library(tidytext)
-library(stopwords)
+library(dplyr) # manejo de datos
+library(ggplot2) # visualización
+library(ggridges) # más opciones de visualización
+library(stringr) # manejo de variables "character"
+library(forcats) # manejo de variables "factor"
+library(readxl) # leer Excel
+library(httr) # Leer info de internet
+library(tidytext) # Análisis de texto
+library(stopwords) # Complementaria a análisis de texto
+library(kableExtra) # tablas
 ```
+
+La informacióna utilizar está disponible en la web de datos abiertos del gobierno de Chile (<http://datos.gob.cl>) por lo que podemos acceder a esta a través de una URL. Luego de descargar los datos desde la web procedemos a cargar estos a nuestra sesión de R.
 
 ``` r
 url <- "http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx"
@@ -19,16 +26,18 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 ```
 
     ## Response [http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx]
-    ##   Date: 2019-10-16 14:08
+    ##   Date: 2019-10-16 14:18
     ##   Status: 200
     ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     ##   Size: 675 kB
-    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpiG2aZA\file4906e2f1366.xlsx
+    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpiIEXgf\file29b468f3033.xlsx
 
 ``` r
 datos <- read_excel(tf)
+```
 
-str(datos)
+``` r
+str(datos) %>% kable()
 ```
 
     ## Classes 'tbl_df', 'tbl' and 'data.frame':    9367 obs. of  8 variables:
@@ -41,6 +50,12 @@ str(datos)
     ##  $ NOMBRE                            : chr  "AMPLIACION OFICINAS M.O.P. EDIFICIO SERVICIOS PUBLICOS ARICA, ARTURO PRAT 305, ARICA" "CONSTRUCCION EMBALSE LIVILCAR VALLE DE AZAPA, COMUNA DE ARICA" "CONSTRUCCION EMBALSE CHIRONTA VALLE DEL LLUTA" "CONSTRUCCION INFRAESTRUCTURA EN CAUCE URBANO RÍO SAN JOSÉ ARICA" ...
     ##  $ INVERSIÓN (MILES DE $ DE CADA AÑO): num  1121062 23272 770137 498645 25805 ...
 
+<table>
+<tbody>
+<tr>
+</tr>
+</tbody>
+</table>
 ``` r
 head(datos)
 ```
@@ -150,4 +165,4 @@ df %>%
   geom_col(show.legend = FALSE)
 ```
 
-![](OOPPChile_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](OOPPChile_files/figure-markdown_github/unnamed-chunk-2-1.png)
