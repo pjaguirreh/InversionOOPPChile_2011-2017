@@ -7,64 +7,16 @@ Primero cargamos las librerías que se utilizarán en este ejercicio.
 
 ``` r
 library(dplyr) # manejo de datos
-```
-
-    ## Warning: package 'dplyr' was built under R version 3.6.1
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
 library(ggplot2) # visualización
 library(ggridges) # más opciones de visualización
-```
-
-    ## 
-    ## Attaching package: 'ggridges'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     scale_discrete_manual
-
-``` r
 library(stringr) # manejo de variables "character"
 library(forcats) # manejo de variables "factor"
 library(readxl) # leer Excel
 library(httr) # Leer info de internet
-```
-
-    ## Warning: package 'httr' was built under R version 3.6.1
-
-``` r
 library(tidytext) # Análisis de texto
-```
-
-    ## Warning: package 'tidytext' was built under R version 3.6.1
-
-``` r
 library(stopwords) # Complementaria a análisis de texto
-```
-
-    ## Warning: package 'stopwords' was built under R version 3.6.1
-
-``` r
 library(kableExtra) # tablas
 ```
-
-    ## 
-    ## Attaching package: 'kableExtra'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     group_rows
 
 La informacióna utilizar está disponible en la web de datos abiertos del gobierno de Chile (<http://datos.gob.cl>) por lo que podemos acceder a esta a través de una URL. Luego de descargar los datos desde la web procedemos a cargar estos a nuestra sesión de R.
 
@@ -74,11 +26,11 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 ```
 
     ## Response [http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx]
-    ##   Date: 2019-10-16 14:35
+    ##   Date: 2019-10-16 14:37
     ##   Status: 200
     ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     ##   Size: 675 kB
-    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpeKKU9r\file21cc1dce223b.xlsx
+    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\Rtmp6Vz1oo\file2387d9770c9.xlsx
 
 ``` r
 datos <- read_excel(tf)
@@ -219,44 +171,5 @@ df %>%
   ggplot(aes(palabra, n, fill = Servicio)) +
   geom_col(show.legend = FALSE)
 ```
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): Unequal factor levels:
-    ## coercing to character
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
-    ## factor vector, coercing into character vector
 
 ![](OOPPChile_files/figure-markdown_github/unnamed-chunk-2-1.png)
