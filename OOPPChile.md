@@ -19,11 +19,11 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 ```
 
     ## Response [http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx]
-    ##   Date: 2019-10-16 12:17
+    ##   Date: 2019-10-16 14:08
     ##   Status: 200
     ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     ##   Size: 675 kB
-    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpMv6Bp3\file24dc56a84a72.xlsx
+    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpiG2aZA\file4906e2f1366.xlsx
 
 ``` r
 datos <- read_excel(tf)
@@ -151,24 +151,3 @@ df %>%
 ```
 
 ![](OOPPChile_files/figure-markdown_github/unnamed-chunk-1-1.png)
-
-``` r
-  facet_wrap(~Servicio)
-```
-
-    ## <ggproto object: Class FacetWrap, Facet, gg>
-    ##     compute_layout: function
-    ##     draw_back: function
-    ##     draw_front: function
-    ##     draw_labels: function
-    ##     draw_panels: function
-    ##     finish_data: function
-    ##     init_scales: function
-    ##     map_data: function
-    ##     params: list
-    ##     setup_data: function
-    ##     setup_params: function
-    ##     shrink: TRUE
-    ##     train_scales: function
-    ##     vars: function
-    ##     super:  <ggproto object: Class FacetWrap, Facet, gg>
