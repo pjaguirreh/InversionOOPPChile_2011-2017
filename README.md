@@ -232,20 +232,15 @@ df_palabra %>%
 df_palabra %>% 
   count(Region, palabra) %>% 
   filter(n > 5) %>% 
-  arrange(Region, desc(n))
+  group_by(Region) %>% 
+  top_n(10, n) %>% 
+  ungroup() %>% 
+  arrange(Region, -n) %>% 
+  mutate(orden = row_number()) %>% 
+  ggplot(aes(x = reorder(palabra, -orden), y = n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~Region, scales = "free_y")
 ```
 
-    ## # A tibble: 2,136 x 3
-    ##    Region             palabra          n
-    ##    <fct>              <chr>        <int>
-    ##  1 Arica y parinacota arica          163
-    ##  2 Arica y parinacota ruta           159
-    ##  3 Arica y parinacota sector         126
-    ##  4 Arica y parinacota conservacion   125
-    ##  5 Arica y parinacota reposicion     111
-    ##  6 Arica y parinacota region          97
-    ##  7 Arica y parinacota construccion    77
-    ##  8 Arica y parinacota mejoramiento    57
-    ##  9 Arica y parinacota vial            51
-    ## 10 Arica y parinacota red             50
-    ## # ... with 2,126 more rows
+![](OOPPChile_files/figure-markdown_github/unnamed-chunk-4-1.png)
