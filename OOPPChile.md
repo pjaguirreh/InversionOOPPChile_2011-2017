@@ -7,16 +7,64 @@ Primero cargamos las librerías que se utilizarán en este ejercicio.
 
 ``` r
 library(dplyr) # manejo de datos
+```
+
+    ## Warning: package 'dplyr' was built under R version 3.6.1
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(ggplot2) # visualización
 library(ggridges) # más opciones de visualización
+```
+
+    ## 
+    ## Attaching package: 'ggridges'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     scale_discrete_manual
+
+``` r
 library(stringr) # manejo de variables "character"
 library(forcats) # manejo de variables "factor"
 library(readxl) # leer Excel
 library(httr) # Leer info de internet
+```
+
+    ## Warning: package 'httr' was built under R version 3.6.1
+
+``` r
 library(tidytext) # Análisis de texto
+```
+
+    ## Warning: package 'tidytext' was built under R version 3.6.1
+
+``` r
 library(stopwords) # Complementaria a análisis de texto
+```
+
+    ## Warning: package 'stopwords' was built under R version 3.6.1
+
+``` r
 library(kableExtra) # tablas
 ```
+
+    ## 
+    ## Attaching package: 'kableExtra'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     group_rows
 
 La informacióna utilizar está disponible en la web de datos abiertos del gobierno de Chile (<http://datos.gob.cl>) por lo que podemos acceder a esta a través de una URL. Luego de descargar los datos desde la web procedemos a cargar estos a nuestra sesión de R.
 
@@ -26,29 +74,17 @@ GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
 ```
 
     ## Response [http://datos.gob.cl/dataset/104d1ebf-4d1b-4c3d-af9e-e85e5bbf1fc9/resource/3fe6aa75-b611-48bb-ae94-abf745bc0553/download/detalleinversionhistoricamop2011-2019.xlsx]
-    ##   Date: 2019-10-16 14:28
+    ##   Date: 2019-10-16 14:35
     ##   Status: 200
     ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     ##   Size: 675 kB
-    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpKmOkYN\file2a1c1d0c6d34.xlsx
+    ## <ON DISK>  C:\Users\PABLO~1.AGU\AppData\Local\Temp\RtmpeKKU9r\file21cc1dce223b.xlsx
 
 ``` r
 datos <- read_excel(tf)
 ```
 
-``` r
-str(datos)
-```
-
-    ## Classes 'tbl_df', 'tbl' and 'data.frame':    9367 obs. of  8 variables:
-    ##  $ AÑO                               : num  2011 2011 2011 2011 2011 ...
-    ##  $ REGIÓN                            : chr  "Arica y Parinacota" "Arica y Parinacota" "Arica y Parinacota" "Arica y Parinacota" ...
-    ##  $ SERVICIO                          : chr  "Dirección de Arquitectura" "Dirección de Obras Hidráulicas" "Dirección de Obras Hidráulicas" "Dirección de Obras Hidráulicas" ...
-    ##  $ PROVINCIA                         : chr  "ARICA" "PARINACOTA" "ARICA" "ARICA" ...
-    ##  $ COMUNA                            : chr  "ARICA" "PUTRE" "ARICA" "ARICA" ...
-    ##  $ BIP                               : chr  "30088379-0" "30034648-0" "30034659-0" "30069191-0" ...
-    ##  $ NOMBRE                            : chr  "AMPLIACION OFICINAS M.O.P. EDIFICIO SERVICIOS PUBLICOS ARICA, ARTURO PRAT 305, ARICA" "CONSTRUCCION EMBALSE LIVILCAR VALLE DE AZAPA, COMUNA DE ARICA" "CONSTRUCCION EMBALSE CHIRONTA VALLE DEL LLUTA" "CONSTRUCCION INFRAESTRUCTURA EN CAUCE URBANO RÍO SAN JOSÉ ARICA" ...
-    ##  $ INVERSIÓN (MILES DE $ DE CADA AÑO): num  1121062 23272 770137 498645 25805 ...
+Utilizando `head()` y \``str()` podemos tener una primera impresión sobre los datos que acabamos de cargar.
 
 ``` r
 head(datos)
@@ -65,6 +101,30 @@ head(datos)
     ## 6  2011 Arica ~ Direcció~ ARICA      ARICA  3007~ CONSTRU~           233856
 
 ``` r
+str(datos)
+```
+
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    9367 obs. of  8 variables:
+    ##  $ AÑO                               : num  2011 2011 2011 2011 2011 ...
+    ##  $ REGIÓN                            : chr  "Arica y Parinacota" "Arica y Parinacota" "Arica y Parinacota" "Arica y Parinacota" ...
+    ##  $ SERVICIO                          : chr  "Dirección de Arquitectura" "Dirección de Obras Hidráulicas" "Dirección de Obras Hidráulicas" "Dirección de Obras Hidráulicas" ...
+    ##  $ PROVINCIA                         : chr  "ARICA" "PARINACOTA" "ARICA" "ARICA" ...
+    ##  $ COMUNA                            : chr  "ARICA" "PUTRE" "ARICA" "ARICA" ...
+    ##  $ BIP                               : chr  "30088379-0" "30034648-0" "30034659-0" "30069191-0" ...
+    ##  $ NOMBRE                            : chr  "AMPLIACION OFICINAS M.O.P. EDIFICIO SERVICIOS PUBLICOS ARICA, ARTURO PRAT 305, ARICA" "CONSTRUCCION EMBALSE LIVILCAR VALLE DE AZAPA, COMUNA DE ARICA" "CONSTRUCCION EMBALSE CHIRONTA VALLE DEL LLUTA" "CONSTRUCCION INFRAESTRUCTURA EN CAUCE URBANO RÍO SAN JOSÉ ARICA" ...
+    ##  $ INVERSIÓN (MILES DE $ DE CADA AÑO): num  1121062 23272 770137 498645 25805 ...
+
+Teniendo en cuenta las características de los datos haremos unas pequeñas modificaciones antes de avanzar:
+
+-   Sacar la columna `BIP` que pareciera ser un identificador que no otorga mayor información
+-   Cambiar los nombres de las variables para dejarlas en formato **sentence** (primer letra mayúscula y el resto minúscula) así como sacar caractéres especiales
+-   Cambiar la variable `Inversion` de miles a millones de pesos
+-   Modificar los valores de las columnas `Region`, `Provincia`, `Comuna` y `Nombre` a formato **sentence**
+-   Modificar la columna `Region` de **character** a **factor**
+
+Todos estos cambios serán almacenados en un objeto llamado `df`.
+
+``` r
 df <- datos %>%
   select(-BIP) %>%
   rename(
@@ -77,9 +137,10 @@ df <- datos %>%
     Inversion = `INVERSIÓN (MILES DE $ DE CADA AÑO)`
   ) %>% 
   mutate(Inversion = round(Inversion / 1000000, 1),
+         Region = str_to_sentence(Region),
          Provincia = str_to_sentence(Provincia),
-         Nombre = str_to_lower(Nombre),
          Comuna = str_to_sentence(Comuna),
+         Nombre = str_to_sentence(Nombre),
          Region = as_factor(Region))
 ```
 
@@ -158,5 +219,44 @@ df %>%
   ggplot(aes(palabra, n, fill = Servicio)) +
   geom_col(show.legend = FALSE)
 ```
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): Unequal factor levels:
+    ## coercing to character
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots, caller_env()): binding character and
+    ## factor vector, coercing into character vector
 
 ![](OOPPChile_files/figure-markdown_github/unnamed-chunk-2-1.png)
